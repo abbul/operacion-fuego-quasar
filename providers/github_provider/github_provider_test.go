@@ -2,8 +2,8 @@ package github_provider
 
 import (
 	"errors"
-	"github.com/accexs/github-microservice/clients/restclient"
-	"github.com/accexs/github-microservice/domain/github_domain"
+	"github.com/abbul/operacion-fuego-quasar/clients/restclient"
+	"github.com/abbul/operacion-fuego-quasar/domain/github_domain"
 	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"net/http"
@@ -18,9 +18,9 @@ func TestMain(m *testing.M) {
 }
 
 func TestConstants(t *testing.T) {
-	assert.EqualValues(t,"Authorization", headerAuthorization)
-	assert.EqualValues(t,"token %s", headerAuthorizationFormat)
-	assert.EqualValues(t,"https://api.github.com/user/repos", urlCreateRepo)
+	assert.EqualValues(t, "Authorization", headerAuthorization)
+	assert.EqualValues(t, "token %s", headerAuthorizationFormat)
+	assert.EqualValues(t, "https://api.github.com/user/repos", urlCreateRepo)
 }
 
 func TestGetAuthHeader(t *testing.T) {

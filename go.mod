@@ -1,4 +1,4 @@
-module github.com/accexs/operacion-fuego-quasar
+module github.com/abbul/operacion-fuego-quasar
 
 go 1.14
 

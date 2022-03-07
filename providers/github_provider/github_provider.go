@@ -3,8 +3,8 @@ package github_provider
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/accexs/github-microservice/clients/restclient"
-	"github.com/accexs/github-microservice/domain/github_domain"
+	"github.com/abbul/operacion-fuego-quasar/clients/restclient"
+	"github.com/abbul/operacion-fuego-quasar/domain/github_domain"
 	"io/ioutil"
 	"log"
 	"net/http"

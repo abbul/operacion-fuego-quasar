@@ -1,50 +1,44 @@
 package services
 
 import (
-	"github.com/accexs/github-microservice/config"
-	"github.com/accexs/github-microservice/domain/github_domain"
-	"github.com/accexs/github-microservice/domain/repositories"
-	"github.com/accexs/github-microservice/providers/github_provider"
-	"github.com/accexs/github-microservice/utils/errors"
+	"github.com/abbul/operacion-fuego-quasar/domain/top_secret"
+	"github.com/abbul/operacion-fuego-quasar/utils/cache"
 	"strings"
 )
 
-type repoService struct {
+func GetLocation(distance float32) (x, y float32) {
+	cache.POSITION_X = distance
+	cache.POSITION_Y = distance
+	return cache.POSITION_X, cache.POSITION_Y
 }
 
-type repoServiceInterface interface {
-	CreateRepo(input repositories.CreateRepoRequest) (*repositories.CreateRepoResponse, errors.ApiError)
+func JoinLocations(satellites []top_secret.Satellite) (x, y float32) {
+	for i := range satellites {
+		var satellite top_secret.Satellite = satellites[i]
+		GetLocation(satellite.Distance)
+	}
+	return cache.POSITION_X, cache.POSITION_Y
 }
 
-var (
-	RepositoryService repoServiceInterface
-)
+func GetMessage(messages []string) (msg string) {
+	for i, s := range messages {
+		if i >= len(cache.MESSAGE) {
+			cache.MESSAGE = append(cache.MESSAGE, s)
+			continue
+		}
+		if s == "" {
+			continue
+		}
+		cache.MESSAGE[i] = s
+	}
 
-func init() {
-	RepositoryService = &repoService{}
+	return strings.Join(cache.MESSAGE, " ")
 }
 
-func (s *repoService) CreateRepo(input repositories.CreateRepoRequest) (*repositories.CreateRepoResponse, errors.ApiError) {
-	input.Name = strings.TrimSpace(input.Name)
-	if input.Name == "" {
-		return nil, errors.NewBadRequestError("invalid repository name")
+func JoinMessages(satellites []top_secret.Satellite) (msg string) {
+	for i := range satellites {
+		var satellite top_secret.Satellite = satellites[i]
+		GetMessage(satellite.Message)
 	}
-
-	request := github_domain.CreateRepoRequest{
-		Name:        input.Name,
-		Description: input.Description,
-		Private:     true,
-	}
-
-	response, err := github_provider.CreateRepo(config.GetGitHubAccessToken(), request)
-	if err != nil {
-		return nil, errors.NewApiError(err.StatusCode, err.Message)
-	}
-
-	result := repositories.CreateRepoResponse{
-		Id: response.Id,
-		Name: response.Name,
-		Owner: response.Owner.Login,
-	}
-	return &result, nil
+	return strings.Join(cache.MESSAGE, " ")
 }

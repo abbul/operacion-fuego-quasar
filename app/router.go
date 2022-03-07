@@ -1,7 +1,7 @@
 package app
 
 import (
-	"github.com/accexs/github-microservice/controllers"
+	"github.com/abbul/operacion-fuego-quasar/controllers"
 )
 
 func initRouter() {
