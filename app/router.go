@@ -5,5 +5,7 @@ import (
 )
 
 func initRouter() {
-	server.POST("/top-secret", controllers.FormatMessage)
+	server.POST("/top_secret", controllers.FormatTopSecret)
+	server.POST("/top_secret_split/:satellite_name", controllers.AddInfoForTopSecretSplit)
+	server.GET("/top_secret_split", controllers.FormatTopSecretSplit)
 }
