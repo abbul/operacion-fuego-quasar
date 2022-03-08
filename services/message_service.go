@@ -2,7 +2,7 @@ package services
 
 import (
 	"errors"
-	"github.com/abbul/operacion-fuego-quasar/domain/top_secret"
+	"github.com/abbul/operacion-fuego-quasar/models"
 	"github.com/abbul/operacion-fuego-quasar/repositories"
 	"strings"
 )
@@ -26,25 +26,25 @@ func GetMessage(messages []string) (msg string) {
 	return strings.Join(repositories.GetMessage(), " ")
 }
 
-func JoinLocations(topSecrets []top_secret.TopSecret) (x, y float32, err error) {
+func JoinLocations(topSecrets []models.TopSecret) (x, y float32, err error) {
 	var satellites, _ = repositories.GetSatellites()
 	if len(topSecrets) != len(satellites) {
 		return 0, 0, errors.New("location__not enough information")
 	}
 	for _, topSecret := range topSecrets {
-		var satellite top_secret.TopSecret = topSecret
+		var satellite models.TopSecret = topSecret
 		x, y = GetLocation(satellite.Distance)
 	}
 	return x, y, nil
 }
 
-func JoinMessages(topSecrets []top_secret.TopSecret) (msg string, err error) {
+func JoinMessages(topSecrets []models.TopSecret) (msg string, err error) {
 	var satellites, _ = repositories.GetSatellites()
 	if len(topSecrets) != len(satellites) {
 		return "", errors.New("message-not_enough_information")
 	}
 	for _, topSecret := range topSecrets {
-		var satellite top_secret.TopSecret = topSecret
+		var satellite models.TopSecret = topSecret
 		GetMessage(satellite.Message)
 	}
 	return strings.Join(repositories.GetMessage(), " "), nil
@@ -58,13 +58,13 @@ func GetLocationSplit() (x, y float32, err error) {
 	return JoinLocations(repositories.GetTopSecrets())
 }
 
-func AddTopSecret(topSecretSplit top_secret.RequestSplit) (result bool, err error) {
+func AddTopSecret(topSecretSplit models.RequestSplit) (result bool, err error) {
 	satellite, err := repositories.GetSatelliteByName(topSecretSplit.Name)
 	if err != nil {
 		return false, err
 	}
 
-	var topSecret = top_secret.TopSecret{Name: topSecretSplit.Name, Distance: topSecretSplit.Distance, Message: topSecretSplit.Message}
+	var topSecret = models.TopSecret{Name: topSecretSplit.Name, Distance: topSecretSplit.Distance, Message: topSecretSplit.Message}
 	var topSecrets = repositories.GetTopSecrets()
 	for i, secret := range topSecrets {
 		if satellite.Name == secret.Name {

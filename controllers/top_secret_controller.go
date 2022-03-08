@@ -1,14 +1,14 @@
 package controllers
 
 import (
-	"github.com/abbul/operacion-fuego-quasar/domain/top_secret"
+	"github.com/abbul/operacion-fuego-quasar/models"
 	"github.com/abbul/operacion-fuego-quasar/services"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
 func FormatTopSecret(ctx *gin.Context) {
-	var request top_secret.Request
+	var request models.Request
 	if err := ctx.ShouldBindJSON(&request); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -30,7 +30,7 @@ func FormatTopSecret(ctx *gin.Context) {
 }
 
 func AddInfoForTopSecretSplit(ctx *gin.Context) {
-	var request top_secret.RequestSplit
+	var request models.RequestSplit
 	if err := ctx.ShouldBindUri(&request); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid path request"})
 		return

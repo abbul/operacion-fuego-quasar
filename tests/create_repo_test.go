@@ -1,13 +1,14 @@
-package github_domain
+package tests
 
 import (
 	"encoding/json"
+	"github.com/abbul/operacion-fuego-quasar/src/domain/github_domain"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 func TestCreateRepoRequestAsJson(t *testing.T) {
-	request := CreateRepoRequest{
+	request := github_domain.CreateRepoRequest{
 		Name:        "Golang development",
 		Description: "A golang development repository",
 		Homepage:    "https://github_domain.com",
@@ -22,7 +23,7 @@ func TestCreateRepoRequestAsJson(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, bytes)
 
-	var target CreateRepoRequest
+	var target github_domain.CreateRepoRequest
 	err = json.Unmarshal(bytes, &target)
 	assert.Nil(t, err)
 

@@ -1,18 +1,20 @@
 package repositories
 
-import "github.com/abbul/operacion-fuego-quasar/domain/top_secret"
+import (
+	"github.com/abbul/operacion-fuego-quasar/models"
+)
 
-var SECRETS []top_secret.TopSecret
+var SECRETS []models.TopSecret
 
-func GetTopSecrets() []top_secret.TopSecret {
+func GetTopSecrets() []models.TopSecret {
 	return SECRETS
 }
 
-func PushTopSecrets(topSecret top_secret.TopSecret) []top_secret.TopSecret {
+func PushTopSecrets(topSecret models.TopSecret) []models.TopSecret {
 	SECRETS = append(SECRETS, topSecret)
 	return SECRETS
 }
 
-func InsertionTopSecrets(i int, topSecret top_secret.TopSecret) {
+func InsertionTopSecrets(i int, topSecret models.TopSecret) {
 	SECRETS[i] = topSecret
 }

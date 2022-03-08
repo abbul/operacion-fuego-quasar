@@ -1,21 +1,18 @@
 package app
 
 import (
+	"github.com/abbul/operacion-fuego-quasar/routes"
 	"github.com/gin-gonic/gin"
 )
 
 var (
-	server *gin.Engine
+	engine *gin.Engine
 )
 
-func init() {
-	server = gin.Default()
-}
-
-func StartApp() {
-	initRouter()
-
-	if err := server.Run(":8080"); err != nil {
-		panic(err)
-	}
+func StartApp() (engine *gin.Engine) {
+	engine = gin.Default()
+	var prefixPath = ""
+	routes.AddTopSecretRoutes(engine.Group(prefixPath))
+	routes.AddTopSecretSplitRoutes(engine.Group(prefixPath))
+	return engine
 }
