@@ -1,0 +1,117 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Infrastructure
+
+Parameters:
+  Environment:
+    Type: String
+    Description: Environment
+    MinLength: '1'
+    MaxLength: '41'
+    ConstraintDescription: must contain only alphanumeric characters and _.
+  StackName:
+    Type: String
+  Project:
+    Type: String
+    Description: Project name
+    MinLength: '1'
+    MaxLength: '41'
+    ConstraintDescription: must contain only alphanumeric characters and _.
+  RetentionInDays:
+    Type: Number
+    Description: Retention in days cloudwatch logs
+    Default: 30
+
+Resources:
+
+  #################################################
+  #           ElasticBeanstalk Resources          #
+  #################################################
+  DefaultElasticBeanstalk:
+    Type: AWS::ElasticBeanstalk::Environment
+    Properties:
+      ApplicationName: !Join ['-', [!Ref Environment, !Ref Project, 'default']]
+      VersionLabel: "1"
+
+  #################################################
+  #              Bucket Resources                 #
+  #################################################
+  DefaultBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Join ['-', [!Ref Environment, !Ref Project, 'default']]
+
+  #################################################
+  #                 API Resource                 #
+  #################################################
+  DefaultApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: !Join ['-', [!Ref Environment, !Ref Project, 'default']]
+      StageName: !Ref Environment
+      OpenApiVersion: '3.0.0'
+      EndpointConfiguration:
+        Type: REGIONAL
+      DefinitionBody:
+        Fn::Transform:
+          Name: AWS::Include
+          Parameters:
+            Location: swaggers/api-v1.yml
+      Variables:
+        Environment: !Ref Environment
+      Auth:
+        AddDefaultAuthorizerToCorsPreflight: False
+        ApiKeyRequired: False
+        DefaultAuthorizer: MyCognitoAuth
+        Authorizers:
+          MyCognitoAuth:
+            AuthorizationScopes:
+              - scope1
+              - scope2
+            UserPoolArn:
+              Fn::ImportValue: !Sub ${Environment}-${Project}-ConsumerUserPoolOutput
+            Identity:
+              Header: Authorization
+
+  #################################################
+  #             Cloudwatch Resources              #
+  #################################################
+
+  AuthenticationLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Join ['/', ['/aws/lambda', !Ref AuthenticationFunction]]
+      RetentionInDays: !Ref RetentionInDays
+
+  GetUserLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Join [ '/', [ '/aws/api', !Ref GetUserFunction ] ]
+      RetentionInDays: !Ref RetentionInDays
+
+  DefaultApiLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Join ['/', ['/aws/api', !Ref DefaultApi]]
+      RetentionInDays: !Ref RetentionInDays
+
+  SwaggerLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Join ['/', ['/aws/lambda', !Ref SwaggerFunction]]
+      RetentionInDays: !Ref RetentionInDays
+
+Outputs:
+  api:
+    Description: URL and swagger endpoint
+    Value:
+      !Join [
+        '/',
+        [
+          !Join ['', ['https://', !Ref DefaultApi, '.execute-api.us-east-1.amazonaws.com']],
+          !Ref Environment,
+          'api/docs',
+        ],
+      ]
+    Export:
+      Name: !Join ['-', [!Ref Environment, !Ref Project, 'SwaggerEndpointOutput']]
