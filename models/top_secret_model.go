@@ -2,7 +2,7 @@ package models
 
 type TopSecret struct {
 	Name     string   `json:"name"`
-	Distance float32  `json:"distance"`
+	Distance float64  `json:"distance"`
 	Message  []string `json:"message"`
 }
 
@@ -12,6 +12,6 @@ type SatellitePosition struct {
 }
 
 type Position struct {
-	X float32 `json:"x"`
-	Y float32 `json:"y"`
+	X float64 `json:"x"`
+	Y float64 `json:"y"`
 }

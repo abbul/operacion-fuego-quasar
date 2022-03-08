@@ -14,13 +14,13 @@ func FormatTopSecret(ctx *gin.Context) {
 		return
 	}
 
-	x, y, err := services.JoinLocations(request.Satellites)
+	x, y, err := services.GetLocation(services.NormalizedLocations(request.Satellites)...)
 	if err != nil {
 		ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}
 
-	message, err := services.JoinMessages(request.Satellites)
+	message, err := services.GetMessage(services.NormalizedMessages(request.Satellites)...)
 	if err != nil {
 		ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
