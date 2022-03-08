@@ -3,7 +3,6 @@ package repositories
 import (
 	"errors"
 	"github.com/abbul/operacion-fuego-quasar/models"
-	"log"
 )
 
 const (
@@ -21,11 +20,9 @@ var SATELLITES = []models.SatellitePosition{
 func GetSatelliteByName(name string) (satellite models.SatellitePosition, err error) {
 	for _, satellite := range SATELLITES {
 		if name == satellite.Name {
-			log.Println(satellite.Name)
 			return satellite, nil
 		}
 	}
-	log.Println(name)
 	return models.SatellitePosition{}, errors.New("satellite-not_found")
 }
 
